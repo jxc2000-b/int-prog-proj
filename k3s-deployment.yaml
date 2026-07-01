@@ -1,0 +1,63 @@
+apiVersion: apps/v1 
+kind: Deployment 
+metadata: 
+  name: track3-app 
+  namespace: aagamu
+spec: 
+  replicas: 1 
+  selector: 
+    matchLabels: 
+      app: track3-app 
+  template: 
+    metadata: 
+      labels: 
+        app: track3-app 
+    spec: 
+      containers: 
+      - name: track3-app 
+        image: ghcr.io/jxc2000-b/track3-app:v4
+        ports: 
+        - containerPort: 80 
+        resources: 
+          requests: 
+            cpu: 100m 
+            memory: 128Mi 
+          limits: 
+            cpu: 500m 
+            memory: 512Mi 
+--- 
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: track3-app 
+  namespace: aagamu
+spec: 
+  selector: 
+    app: track3-app 
+  ports: 
+    - port: 80 
+      targetPort: 80 
+  type: ClusterIP 
+--- 
+apiVersion: networking.k8s.io/v1 
+kind: Ingress 
+metadata: 
+  name: track3-app 
+  namespace: aagamu
+spec: 
+  ingressClassName: traefik 
+  rules: 
+  - host: aagamu.k3s.local 
+    http: 
+      paths: 
+      - path: / 
+        pathType: Prefix 
+        backend: 
+          service: 
+            name: track3-app 
+            port: 
+              number: 80 
+
+
+
+
