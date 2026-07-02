@@ -2,14 +2,14 @@
 CREATE SCHEMA IF NOT EXISTS "public";
 
 -- CreateTable
-CREATE TABLE "Product" (
+CREATE TABLE "People" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "category" TEXT NOT NULL,
-    "price" DOUBLE PRECISION NOT NULL,
-    "inStock" BOOLEAN NOT NULL DEFAULT true,
+    "height" DOUBLE PRECISION NOT NULL,
+    "weight" DOUBLE PRECISION NOT NULL,
+    "skills" TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "People_pkey" PRIMARY KEY ("id")
 );
 

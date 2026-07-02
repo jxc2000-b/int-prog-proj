@@ -56,6 +56,18 @@ async function main() {
             },
         ]
     });
+
+    await prisma.people.deleteMany();
+
+    await prisma.people.createMany({
+        data: [
+            { name: "Yaldabaoth", height: 1273.00, weight: 69400.000, skills: ["creation", "jealously"] }, 
+            { name: "Zarathustra", height: 75, weight: 168, skills: [ "leadership", "wisdom",] },
+            { name: "Bryan", height: 72, weight: 180, skills: ["creativity"] }, 
+            { name: "Anthony Edward Stark", height: 73, weight: 225, skills: ["intelligence", "Craftsmanship",] },
+            { name: "Kanye West", height: 68, weight: 180, skills: ["music", "art",] },
+        ]
+    })
     console.log("Seeded products");
 }
 

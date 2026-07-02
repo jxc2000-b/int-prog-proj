@@ -11,7 +11,6 @@ useful commands:
 ```
 
 kubectl run postgres-client \
-  -n aagamu \
   --restart=Never \
   --image=postgres:16-alpine \
   --env PGPASSWORD='your-db-password' \
@@ -21,10 +20,16 @@ kubectl run postgres-client \
 
 # check logs after: 
 ```
-kubectl logs postgres-client -n aagamu
+kubectl logs postgres-client 
 ```
 
 # delete pod: 
 ```
-kubectl delete pod postgres-client -n aagamu
+kubectl delete pod postgres-client 
 ```
+## Useful commands:
+
+# Set env vars:
+set -a
+source .env
+set +a
