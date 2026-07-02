@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import avatar from "../public/avatar.jpg";
+import Metric from "./components/Metric";
 import { Person, PeopleResponse } from "./types"
 
 export default function Home() {
@@ -113,14 +114,5 @@ export default function Home() {
         refreshing every 2 seconds.
       </footer>
     </main>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-baseline gap-3">
-      <dt className="shrink-0 text-sm text-neutral-400">{label}</dt>
-      <dd className="min-w-0 text-2xl font-semibold text-white">{value}</dd>
-    </div>
   );
 }
