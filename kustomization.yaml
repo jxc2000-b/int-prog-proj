@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: aagamu
+
+resources:
+- k3s-deployment.yaml
+
+patches:
+- path: patch-env.yaml
+
+configMapGenerator:
+- name: track3-app-env
+  envs:
+  - .env
+
+# keep the name stable (no hash suffix) so the patch's configMapRef matches
+generatorOptions:
+  disableNameSuffixHash: true

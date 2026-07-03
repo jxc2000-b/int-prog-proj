@@ -2,14 +2,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 import avatar from "../public/avatar.jpg";
+import Avatar from "./components/Avatar";
 import Metric from "./components/Metric";
-import { Person, PeopleResponse } from "./types"
+import Statement from "./components/Statement";
+import { Person, PeopleResponse } from "./types";
 
 export default function Home() {
   const [people, setPeople] = useState<Person[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [clickMessage, setClickMessage] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -74,24 +77,21 @@ export default function Home() {
     <main className="min-h-screen bg-neutral-950 px-6 py-10 text-neutral-100">
       <section className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col justify-center">
         <div className="mb-8">
-          <h1 className="mt-3 text-4xl font-semibold tracking-normal text-white md:text-6xl">
-            The people of all time
-          </h1>
+          <Statement>The people of all time</Statement>
         </div>
 
         <div className="grid gap-6">
-          <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-2xl">
+          <div
+            className="relative rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-2xl"
+            onClick={() => setClickMessage("click")}
+          >
             {isLoading ? (
               <p className="text-lg text-neutral-300">Loading people...</p>
             ) : error ? (
               <p className="text-lg text-red-300">{error}</p>
             ) : activePerson ? (
               <div className="grid gap-6 sm:grid-cols-[160px_1fr] sm:items-center">
-                <img
-                  src={avatar.src}
-                  alt=""
-                  className="aspect-square w-40 rounded-lg object-cover"
-                />
+                <Avatar src={avatar} />
                 <div>
                   <h2 className="text-5xl font-bold tracking-normal text-white">
                     {activePerson.name}
@@ -106,6 +106,11 @@ export default function Home() {
             ) : (
               <p className="text-lg text-neutral-300">No people found.</p>
             )}
+            {clickMessage ? (
+              <p className="absolute bottom-4 right-4 text-sm font-medium text-neutral-400">
+                {clickMessage}
+              </p>
+            ) : null}
           </div>
         </div>
       </section>
