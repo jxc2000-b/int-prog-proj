@@ -13,6 +13,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [clickMessage, setClickMessage] = useState("");
+  const [nameFilter, setNameFilter] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -52,19 +53,29 @@ export default function Home() {
     };
   }, []);
 
+  const visiblePeople = useMemo(() => {
+    const filter = nameFilter.trim().toLowerCase();
+
+    if (!filter) {
+      return people;
+    }
+
+    return people.filter((person) => person.name.toLowerCase().includes(filter));
+  }, [nameFilter, people]);
+
   useEffect(() => {
-    if (people.length <= 1) {
+    if (visiblePeople.length <= 1) {
       return;
     }
 
     const timer = window.setInterval(() => {
-      setActiveIndex((currentIndex) => (currentIndex + 1) % people.length);
+      setActiveIndex((currentIndex) => (currentIndex + 1) % visiblePeople.length);
     }, 2000);
 
     return () => window.clearInterval(timer);
-  }, [people.length]);
+  }, [visiblePeople.length]);
 
-  const activePerson = people[activeIndex];
+  const activePerson = visiblePeople[activeIndex];
   const averageHeight = useMemo(() => {
     if (people.length === 0) {
       return 0;
@@ -81,6 +92,19 @@ export default function Home() {
         </div>
 
         <div className="grid gap-6">
+          <label className="grid gap-2 text-sm font-medium text-neutral-300">
+            Filter by name
+            <input
+              value={nameFilter}
+              onChange={(event) => {
+                setNameFilter(event.target.value);
+                setActiveIndex(0);
+              }}
+              className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-4 py-3 text-base text-white outline-none transition focus:border-neutral-400"
+              placeholder="Type a name"
+            />
+          </label>
+
           <div
             className="relative rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-2xl"
             onClick={() => setClickMessage("click")}
@@ -115,7 +139,8 @@ export default function Home() {
         </div>
       </section>
       <footer className="mx-auto mt-8 max-w-5xl border-t border-neutral-800 pt-4 text-sm text-neutral-500">
-        {people.length} {people.length === 1 ? "person" : "people"} fetched,
+        Showing {visiblePeople.length} of {people.length}{" "}
+        {people.length === 1 ? "person" : "people"} fetched,
         refreshing every 2 seconds.
       </footer>
     </main>

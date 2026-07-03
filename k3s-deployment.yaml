@@ -15,7 +15,7 @@ spec:
     spec: 
       containers: 
       - name: track3-app 
-        image: ghcr.io/jxc2000-b/track3-app:v7
+        image: ghcr.io/jxc2000-b/track3-app:v8
         ports:
         - containerPort: 3000
         resources: 
