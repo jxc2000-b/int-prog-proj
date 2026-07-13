@@ -1,9 +1,21 @@
 import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 
 const MINIMUM_PASSWORD_LENGTH = 12;
+
+const signupSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .email("A valid email address is required.")
+    .transform((email) => email.toLowerCase()),
+  password: z.string().min(MINIMUM_PASSWORD_LENGTH, {
+    message: `Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters.`,
+  }),
+});
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -14,25 +26,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Request body must be valid JSON." }, { status: 400 });
   }
 
-  const email =
-    typeof body === "object" && body !== null && "email" in body && typeof body.email === "string"
-      ? body.email.trim().toLowerCase()
-      : "";
-  const password =
-    typeof body === "object" && body !== null && "password" in body && typeof body.password === "string"
-      ? body.password
-      : "";
+  const result = signupSchema.safeParse(body);
 
-  if (!email || !email.includes("@")) {
-    return NextResponse.json({ error: "A valid email address is required." }, { status: 400 });
-  }
-
-  if (password.length < MINIMUM_PASSWORD_LENGTH) {
+  if (!result.success) {
     return NextResponse.json(
-      { error: `Password must be at least ${MINIMUM_PASSWORD_LENGTH} characters.` },
+      { error: result.error.issues[0]?.message ?? "Invalid signup data." },
       { status: 400 },
     );
   }
+
+  const { email, password } = result.data;
 
   const existingUser = await prisma.user.findUnique({
     where: { email },

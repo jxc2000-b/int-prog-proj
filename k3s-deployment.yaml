@@ -16,6 +16,7 @@ spec:
       containers: 
       - name: track3-app 
         image: ghcr.io/jxc2000-b/track3-app:dev
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         resources: 
