@@ -1,148 +1,30 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import avatar from "../public/avatar.jpg";
-import Avatar from "./components/Avatar";
-import Metric from "./components/Metric";
+import Link from "next/link";
 import Statement from "./components/Statement";
-import { Person, PeopleResponse } from "./types";
+
 
 export default function Home() {
-  const [people, setPeople] = useState<Person[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [clickMessage, setClickMessage] = useState("");
-  const [nameFilter, setNameFilter] = useState("");
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadPeople() {
-      try {
-        const response = await fetch("/api/people");
-
-        if (!response.ok) {
-          throw new Error("Unable to load people");
-        }
-
-        const data = (await response.json()) as PeopleResponse;
-
-        if (isMounted) {
-          setPeople(data.people);
-          setActiveIndex(0);
-          setError(null);
-        }
-      } catch (loadError) {
-        if (isMounted) {
-          setError(
-            loadError instanceof Error ? loadError.message : "Unable to load people",
-          );
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadPeople();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const visiblePeople = useMemo(() => {
-    const filter = nameFilter.trim().toLowerCase();
-
-    if (!filter) {
-      return people;
-    }
-
-    return people.filter((person) => person.name.toLowerCase().includes(filter));
-  }, [nameFilter, people]);
-
-  useEffect(() => {
-    if (visiblePeople.length <= 1) {
-      return;
-    }
-
-    const timer = window.setInterval(() => {
-      setActiveIndex((currentIndex) => (currentIndex + 1) % visiblePeople.length);
-    }, 2000);
-
-    return () => window.clearInterval(timer);
-  }, [visiblePeople.length]);
-
-  const activePerson = visiblePeople[activeIndex];
-  const averageHeight = useMemo(() => {
-    if (people.length === 0) {
-      return 0;
-    }
-
-    return people.reduce((total, person) => total + person.height, 0) / people.length;
-  }, [people]);
 
   return (
-    <main className="min-h-screen bg-neutral-950 px-6 py-10 text-neutral-100">
-      <section className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl flex-col justify-center">
+    <main className="min-h-screen bg-neutral-950 px-6 py-10 text-neutral-100 text-center">
         <div className="mb-8">
-          <Statement>The people of all time</Statement>
+          <Statement>Welcome to The Online Terms of Service Index</Statement>
         </div>
-
-        <div className="grid gap-6">
-          <label className="grid gap-2 text-sm font-medium text-neutral-300">
-            Filter by name
-            <input
-              value={nameFilter}
-              onChange={(event) => {
-                setNameFilter(event.target.value);
-                setActiveIndex(0);
-              }}
-              className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-4 py-3 text-base text-white outline-none transition focus:border-neutral-400"
-              placeholder="Type a name"
-            />
-          </label>
-
-          <div
-            className="relative rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-2xl"
-            onClick={() => setClickMessage("click")}
+        <div className="flex justify-center gap-4">
+          <Link
+            className="rounded-lg bg-white px-4 py-2 font-semibold text-neutral-950 transition hover:bg-neutral-200"
+            href="/signup"
           >
-            {isLoading ? (
-              <p className="text-lg text-neutral-300">Loading people...</p>
-            ) : error ? (
-              <p className="text-lg text-red-300">{error}</p>
-            ) : activePerson ? (
-              <div className="grid gap-6 sm:grid-cols-[160px_1fr] sm:items-center">
-                <Avatar src={avatar} />
-                <div>
-                  <h2 className="text-5xl font-bold tracking-normal text-white">
-                    {activePerson.name}
-                  </h2>
-                  <dl className="mt-6 grid gap-4 sm:grid-rows-2">
-                    <Metric label="Height" value={`${activePerson.height} inches`} />
-                    <Metric label="Weight" value={`${activePerson.weight} lbs`} />
-                    <Metric label="Skills" value={activePerson.skills.join(", ")} />
-                  </dl>
-                </div>
-              </div>
-            ) : (
-              <p className="text-lg text-neutral-300">No people found.</p>
-            )}
-            {clickMessage ? (
-              <p className="absolute bottom-4 right-4 text-sm font-medium text-neutral-400">
-                {clickMessage}
-              </p>
-            ) : null}
-          </div>
+            Sign up
+          </Link>
+          <Link
+            className="rounded-lg border border-neutral-700 px-4 py-2 font-semibold text-white transition hover:border-neutral-400"
+            href="/login"
+          >
+            Log in
+          </Link>
         </div>
-      </section>
-      <footer className="mx-auto mt-8 max-w-5xl border-t border-neutral-800 pt-4 text-sm text-neutral-500">
-        Showing {visiblePeople.length} of {people.length}{" "}
-        {people.length === 1 ? "person" : "people"} fetched,
-        refreshing every 2 seconds.
-      </footer>
     </main>
   );
 }
