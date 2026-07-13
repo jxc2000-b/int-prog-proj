@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { FormEvent, useState } from "react";
 import Statement from "./components/Statement";
 
@@ -43,7 +43,16 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 px-6 py-10 text-neutral-100 text-center">
+    <main className="relative min-h-screen bg-neutral-950 px-6 py-10 text-neutral-100 text-center">
+      {status === "authenticated" ? (
+        <button
+          type="button"
+          onClick={() => signOut({ callbackUrl: "/" })}
+          className="absolute right-6 top-6 rounded-lg border border-neutral-700 px-4 py-2 text-sm font-semibold text-white transition hover:border-neutral-400"
+        >
+          Log out
+        </button>
+      ) : null}
       <div className="mx-auto grid max-w-xl gap-8">
         <div>
           <Statement>Welcome to The Online Terms of Service Index</Statement>
